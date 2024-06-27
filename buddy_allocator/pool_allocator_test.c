@@ -7,10 +7,10 @@
 // 1024 blocks
 #define num_items 16
 
-// buffer should contain also bookkeeping information
+// il buffer deve contenere anche la free list (il sizeofint serve per fare spazio alla lista)
 #define buffer_size num_items*(item_size+sizeof(int))
 
-// we allocate buffer in .bss
+// we allocate buffer in .bss (variabile statica)
 char buffer[buffer_size];
 
 PoolAllocator allocator;

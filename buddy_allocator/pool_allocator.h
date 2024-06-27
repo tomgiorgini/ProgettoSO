@@ -11,15 +11,15 @@ typedef enum {
 typedef struct PoolAllocator{
   
   char* buffer;        //contiguous buffer managed by the system
-  int*  free_list;     //list of linked objects
+  int*  free_list;     //list of linked objects --> Array List
   int buffer_size;     //size of the buffer in bytes
 
-  int size;            //number of free blocks
+  int size;            //number of free blocks 
   int size_max;        //maximum number of blocks
   int item_size;       //size of a block
   
   int first_idx;       //pointer to the first bucket
-  int bucket_size;     // size of a bucket
+  int bucket_size;     //size of a bucket
 } PoolAllocator;
 
 PoolAllocatorResult PoolAllocator_init(PoolAllocator* allocator,

@@ -16,6 +16,7 @@ const char* PoolAllocator_strerror(PoolAllocatorResult result) {
   return PoolAllocator_strerrors[-result];
 }
 
+// Inizializzazione del PoolAllocator
 PoolAllocatorResult PoolAllocator_init(PoolAllocator* a,
 		       int item_size,
 		       int num_items,
@@ -33,12 +34,12 @@ PoolAllocatorResult PoolAllocator_init(PoolAllocator* a,
   a->buffer_size=item_size*num_items;
   a->size_max = num_items;
   
-  a->buffer=memory_block; // the upper part of the buffer is used as memory
-  a->free_list= (int*)(memory_block+item_size*num_items); // the lower part is for bookkeeping
+  a->buffer = memory_block; // the upper part of the buffer is used as memory
+  a->free_list = (int*)(memory_block+item_size*num_items); // the lower part is for bookkeeping
 
   // now we populate the free list by constructing a linked list
   for (int i=0; i<a->size-1; ++i){
-    a->free_list[i]=i+1;
+    a->free_list[i]=i+1;  //ogni elemento viene collegato a quello dopo
   }
   // set the last element to "NULL" 
   a->free_list[a->size-1] = NullIdx;
@@ -47,45 +48,43 @@ PoolAllocatorResult PoolAllocator_init(PoolAllocator* a,
 }
 
 void* PoolAllocator_getBlock(PoolAllocator* a) {
+  // se non ci sono blocchi liberi
   if (a->first_idx==-1)
     return 0;
 
-  // we need to remove the first bucket from the list
-
+  // si prende e rimuove il primo blocco libero dalla free list
   int detached_idx = a->first_idx;
-  // advance the head
-  a->first_idx=a->free_list[a->first_idx];
-  --a->size;
+  a->first_idx=a->free_list[a->first_idx]; //il primo blocco libero è il blocco puntato dal blocco che stiamo rilevando
+  --a->size; // si decrementa la size di 1
   
-  a->free_list[detached_idx]=DetachedIdx;
+  a->free_list[detached_idx]=DetachedIdx; // indirizzo del blocco nella free list
   
-  //now we retrieve the pointer in the item buffer
-  char* block_address=a->buffer+(detached_idx*a->item_size);
+  char* block_address=a->buffer+(detached_idx*a->item_size);  // indirizzo del blocco in memoria
   return block_address;
 }
 
 PoolAllocatorResult PoolAllocator_releaseBlock(PoolAllocator* a, void* block_){
-  //we need to find the index from the address
+  // abbiamo l'indirizzo in memoria, dobbiamo trovare l'index
   char* block=(char*) block_;
-  int offset=block - a->buffer;
+  int offset=block - a->buffer; // si calcola l'offset rispetto all'inizio del buffer
 
-  //sanity check, we need to be aligned to the block boundaries
+  //sanity check, verifichiamo che sia allineato con i blocchi
   if (offset%a->item_size)
     return UnalignedFree;
 
-  int idx=offset/a->item_size;
+  int idx=offset/a->item_size;  // indice del blocco nella free list
 
-  //sanity check, are we inside the buffer?
+  //sanity check, se siamo dentro alla lista
   if (idx<0 || idx>=a->size_max)
     return OutOfRange;
 
-  //is the block detached?
+  //check sulla natura del blocco, è già stato liberato?
   if (a->free_list[idx]!=DetachedIdx)
     return DoubleFree;
 
-  // all fine, we insert in the head
+  //Passati i controlli, si fa inserimento in testa
   a->free_list[idx]=a->first_idx;
   a->first_idx=idx;
-  ++a->size;
+  ++a->size; 
   return Success;
 }

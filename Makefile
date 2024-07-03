@@ -13,7 +13,6 @@ BINS= buddy_allocator_test
 
 .phony: clean all
 
-
 all:	$(LIBS) $(BINS)
 
 %.o:	%.c $(HEADERS)

@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "assert.h": "c",
+        "bit_map.h": "c",
+        "stdio.h": "c",
+        "buddy_allocator.h": "c"
+    }
+}

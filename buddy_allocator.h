@@ -20,6 +20,10 @@ int BuddyAllocator_init(BuddyAllocator* alloc,
                          int bitmap_buffer_size,
                          int min_bucket_size);
 
+void* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
+
+void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int bit);
+
 void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
 
 void BuddyAllocator_free(BuddyAllocator* alloc, void* mem);

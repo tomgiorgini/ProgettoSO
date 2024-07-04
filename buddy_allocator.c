@@ -66,12 +66,97 @@ int BuddyAllocator_init(BuddyAllocator* alloc,
     return 1;
 }
 
+void* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level){
+  int retidx = -1;
+  if (level == 0){
+    int bit = BitMap_bit(&alloc->bitmap, firstIdx(level));
+    if (bit == 0) retidx = 0;
+  }
+  else{
+    int i = firstIdx(level);
+    while (i< firstIdx(level+1)){
+      int bit = BitMap_bit(&alloc->bitmap, i);
+      if (bit == 0){
+         retidx = i;
+         break;
+      }
+      i++;
+    }
+  }
+  if (retidx == -1){
+    printf("Nessun buddy disponibile al livello %d, impossibile allocare\n", level);
+    return NULL;
+  }
+  else{
+    // si aggiorna la bitmap settando ad 1 i blocchi padre e figli del blocco appena preso
+    update_child(&alloc->bitmap,retidx,1);
+    update_parent(&alloc->bitmap,retidx,1);
+    int block_size = alloc->min_bucket_size << (alloc->num_levels - level);
+    char *idx = alloc->memory + ((startIdx(retidx)+1) * block_size);
+    
+    // ci salviamo nel blocco l'indice corrispettivo della bitmap
+    //essendoci fatto spazio precedentemente
+    ((int*)idx)[0] = retidx;
+    return (void *)(idx + sizeof(int*)); // + size dell'indirizzo del blocco in bitmap
+  }
+}
+
 void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size){
+  if (size<0){
+    printf("Invalid Size\n");
+    return NULL;
+  }
+  if (size == 0) {
+    printf("Impossibile allocare 0 byte\n");
+    return NULL;
+  }
+  // aggiungo spazio per salvare l'indirizzo del blocco nella bitmap
+  size += sizeof(int*);
+
+  if (size > alloc->memory_size){
+    printf("Memoria richiesta più grande della memoria totale disponibile, impossibile allocare\n");
+    return NULL;
+  }
+  // we determine the level of the page
+  int mem_size=(1<<alloc->num_levels)*alloc->min_bucket_size;
+
+  // log2(mem_size): n bits to represent the whole memory
+  // log2(size): n nits to represent the requested chunk
+  // bits_mem_size-bits_size = depth of the chunk = level
+  int  level=floor(log2(mem_size/size));
+
+  // if the level is too small, we pad it to max
+  if (level>alloc->num_levels){ level=alloc->num_levels;}
+
+  printf("requested: %d bytes, offered %d bytes, level %d \n",size, alloc->min_bucket_size<<(alloc->num_levels - level), level);
+
+  void* indirizzo = BuddyAllocator_getBuddy(alloc, level);
+  if (indirizzo == NULL){
+    printf("Memory Error: Nessun blocco disponibile\n");
+  }
+  else{
+    printf("Allocazione riuscita: indirizzo %p, al livello %d, di dimensioni %d\n",indirizzo, level, alloc->min_bucket_size<<(alloc->num_levels - level));
+    return indirizzo;
+  }
   return NULL;
 }
 
-void BuddyAllocator_free(BuddyAllocator* alloc, void* mem){
+void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int bit){
+  update_child(&alloc->bitmap,bit,0);
+  merge(&alloc->bitmap,bit);
+  printf("Deallocazione Avvenuta con successo del blocco all'indice %d\n",bit);
+}
 
+void BuddyAllocator_free(BuddyAllocator* alloc, void* mem){
+  if (!mem){
+    printf("Memoria da liberare vuota\n");
+    return;
+  }
+  // we retrieve the buddy from the system
+  char* p=(char*) mem;
+  p = p - sizeof(int*);
+  int idx = (int)*p; // indice del buddy nella bitmap
+  BuddyAllocator_releaseBuddy(alloc,idx);
 }
 
 void merge(BitMap *bitmap, int bit){

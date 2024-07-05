@@ -29,20 +29,9 @@ int main(int argc, char** argv){
         printf("Errore di inizializzazione del Buddy Allocator, quit\n");
         return 0;
     }
-    /*
-    void* t1 = BuddyAllocator_malloc(&alloc,677);
-    void* t2 = BuddyAllocator_malloc(&alloc,1683);
-    void* t3 = BuddyAllocator_malloc(&alloc,483);
-    void* t4 = BuddyAllocator_malloc(&alloc,1683);
-    void* t5 = BuddyAllocator_malloc(&alloc,3);
-    BuddyAllocator_free(&alloc,t1);
-    BuddyAllocator_free(&alloc,t2);
-    BuddyAllocator_free(&alloc,t3);
-    BuddyAllocator_free(&alloc,t4);
-    BuddyAllocator_free(&alloc,t5);
-    */
-   for (int i = 0; i<300;i++){
-    void* t1 = BuddyAllocator_malloc(&alloc,100 + 3*i);
-    printf("%d\n",i);
-   }
+    for (int i =0; i<10;i++){
+      BuddyAllocator_malloc(&alloc, 131072);
+    }
+
+
 }

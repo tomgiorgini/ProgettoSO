@@ -9,22 +9,23 @@
 
 //level of node i
 int levelIdx(size_t idx){
-  return (int)floor(log2(idx));
+  return (int)floor(log2(idx+1));
 };
 //index of the buddy of node i
 int buddyIdx(int idx){
-  if (idx&0x1){
+  if (idx == 0)
+    return 0;
+  if (idx&0x1)
     return idx-1;
-  }
   return idx+1;
 }
 //parent of the node idx
 int parentIdx(int idx){
-  return idx/2;
+  return (int)(idx-1)/2;
 }
 // idx of 1st node of a level i
 int firstIdx(int level){
-  return (1 << level); 
+  return (1 << level)-1; 
 }
 //offset of node idx in his level
 int startIdx(int idx){
@@ -119,12 +120,12 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size){
   }
   // we determine the level of the page
   int mem_size=(1<<alloc->num_levels)*alloc->min_bucket_size;
-
+  printf("mem_size: %d\n", mem_size);
   // log2(mem_size): n bits to represent the whole memory
   // log2(size): n nits to represent the requested chunk
   // bits_mem_size-bits_size = depth of the chunk = level
   int  level=floor(log2(mem_size/size));
-
+  printf("level: %d\n", level);
   // if the level is too small, we pad it to max
   if (level>alloc->num_levels){ level=alloc->num_levels;}
 
@@ -189,8 +190,8 @@ void update_child(BitMap *bitmap, int  bit, int value) {
   if ( bit < bitmap->num_bits) { 
     BitMap_setBit(bitmap,  bit, value);
     // si fa ricorsione binaria sui figli
-    update_child(bitmap,  bit * 2 + 1, value);  // sinistro
-    update_child(bitmap,  bit * 2 + 2, value);  // destro
+    update_child(bitmap,  bit * 2 +1, value);  // sinistro
+    update_child(bitmap,  bit * 2 +2, value);  // destro
   }
 }
 

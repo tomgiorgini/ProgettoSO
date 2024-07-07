@@ -1,5 +1,6 @@
 #include "buddy_allocator.h"
 #include <stdio.h>
+#include "pseudo_malloc.h"
 
 #define BITMAP_SIZE 2<<14
 #define BUDDY_LEVELS 16
@@ -30,12 +31,12 @@ int main(int argc, char** argv){
         return 0;
     }
   void* blocks[20];
-  for (int i =0; i<20; i++){
-    void* p = BuddyAllocator_malloc(&alloc,(1<<i+1)-8);
+  for (int i = 0; i<20; i++){
+    void* p = pseudo_malloc(&alloc,(1<<(i+1))-8);
     blocks[i] = p;
   }
-    for (int i =0; i<20; i++){
-    BuddyAllocator_free(&alloc,blocks[i]);
+    for (int j = 0; j<20; j++){
+    psuedo_free(&alloc,blocks[j]);
   }
 
 }

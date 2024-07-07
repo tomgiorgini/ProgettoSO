@@ -97,7 +97,8 @@ void* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level, int size){
     // ci salviamo nel blocco l'indice corrispettivo della bitmap
     //essendoci fatto spazio precedentemente
     ((int*)ret)[0] = idx;
-    return (void *)(ret + sizeof(int)); // + size dell'indirizzo del blocco in bitmap
+    ((int*)ret)[1] = size;
+    return (void *)(ret + 2*sizeof(int)); // + size dell'indirizzo del blocco in bitmap
   }
 }
 
@@ -128,7 +129,7 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size){
   // if the level is too small, we pad it to max
   if (level>alloc->num_levels){ level=alloc->num_levels;}
 
-  printf("\nRichiesti: %d bytes , offerti %d bytes, al livello %d \n",size, alloc->min_bucket_size<<(alloc->num_levels - level), level);
+  printf("\nRichiesti: %d bytes (+ 8 bytes di overhead) , offerti %d bytes , al livello %d \n",org_size, alloc->min_bucket_size<<(alloc->num_levels - level), level);
 
   void* indirizzo = BuddyAllocator_getBuddy(alloc, level,org_size);
   if (indirizzo == NULL){
@@ -159,7 +160,8 @@ void BuddyAllocator_free(BuddyAllocator* alloc, void* mem){
   }
   // we retrieve the buddy from the system
   int* p = (int*) mem;
-  int idx = p[-1];
+  p--;
+  int idx = *(--p);
   BuddyAllocator_releaseBuddy(alloc,idx,mem);
 }
 
@@ -191,7 +193,7 @@ void update_parent(BitMap *bitmap, int bit, int value) {
 void update_child(BitMap *bitmap, int  bit, int value) {
   if ( bit < bitmap->num_bits) { 
     BitMap_setBit(bitmap,  bit, value);
-    // si fa ricorsione binaria sui figli
+    // si fa ricorsione binaria sui figli in discesa
     update_child(bitmap,  bit * 2 +1, value);  // sinistro
     update_child(bitmap,  bit * 2 +2, value);  // destro
   }

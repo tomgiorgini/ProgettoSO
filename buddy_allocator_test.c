@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #define BITMAP_SIZE 2<<14
-#define BUDDY_LEVELS 17
+#define BUDDY_LEVELS 16
 #define MEMORY_SIZE (1024*1024) // 1MB
 #define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS)) // 2^20 - 2^15 = 2^5 = 8
 
@@ -31,7 +31,7 @@ int main(int argc, char** argv){
     }
   void* blocks[20];
   for (int i =0; i<20; i++){
-    void* p = BuddyAllocator_malloc(&alloc,1<<i+1);
+    void* p = BuddyAllocator_malloc(&alloc,(1<<i+1)-8);
     blocks[i] = p;
   }
     for (int i =0; i<20; i++){

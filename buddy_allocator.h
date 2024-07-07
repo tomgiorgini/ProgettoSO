@@ -4,9 +4,9 @@
 #define MAX_LEVELS 30 // 2^30 = 1GB
 
 typedef struct {
-    int num_levels; 
-    int memory_size;
     char* memory; // the memory area to be managed
+    int memory_size;
+    int num_levels;
     int min_bucket_size; // the minimum page of RAM that can be returned
     BitMap bitmap;
 } BuddyAllocator;
@@ -20,9 +20,9 @@ int BuddyAllocator_init(BuddyAllocator* alloc,
                          int bitmap_buffer_size,
                          int min_bucket_size);
 
-void* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level);
+void* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level,int size);
 
-void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int bit);
+void BuddyAllocator_releaseBuddy(BuddyAllocator* alloc, int bit,void* mem);
 
 void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size);
 

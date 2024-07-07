@@ -4,5 +4,6 @@
         "bit_map.h": "c",
         "stdio.h": "c",
         "buddy_allocator.h": "c"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

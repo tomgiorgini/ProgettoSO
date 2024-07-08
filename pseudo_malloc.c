@@ -63,10 +63,10 @@ void pseudo_free(BuddyAllocator* alloc, void** mem){
             return;
         }
         printf("\nDeallocazione riuscita: Blocco di memoria all'indice %p libero\n", mem);
+        *mem = NULL; // per evitare double free => segmentation faults
     }
     else{
         printf("\nDeallocazione da eseguire con Buddy Allocator");
         BuddyAllocator_free(alloc,*mem);
     }
-    *mem = NULL;
 }

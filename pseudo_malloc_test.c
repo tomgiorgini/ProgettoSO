@@ -52,8 +52,9 @@ int main(int argc, char** argv){
     } 
     // dealloco una seconda volta (double free)
     printf("\n\nTEST DOUBLE FREE\n");
-    for (int i = 0; i<20; i++){
-      pseudo_free(&alloc, &blocks[i]);
+    for (int i = 0; i<20; i++){ // sui blocchi deallocati dal buddy allocator ci sarà l'avvertimento di double free
+      pseudo_free(&alloc, &blocks[i]);  // i blocchi allocati da mmap invece saranno stati messi a NULL per evitare
+                                        // segmentation faults
     }
 
 

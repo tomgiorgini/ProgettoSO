@@ -31,7 +31,35 @@ int main(int argc, char** argv){
         return -1;
     }
 
+    void *blocks[50];
+
+    // test con size non valide
+    printf("\n\nTEST ERRORI SULLA SIZE\n");
+    pseudo_malloc(&alloc,0);
+    pseudo_malloc(&alloc,-1);
+
+    //alloco vari blocchi di dimensioni variabile 
+    //alcuni sono allocati con mmap, altri con il buddy allocator
+    printf("\n\nTEST ALLOCAZIONE BLOCCHI DI DIMENSIONE VARIABILE\n");
+    for (int i = 0; i<20; i++){
+      void* p = pseudo_malloc(&alloc,1<<i);
+      blocks[i] = p;
+    }
+    // deallocazione
+    printf("\n\nTEST DEALLOCAZIONE BLOCCHI DI DIMENSIONE VARIABILE\n");
+    for (int i = 0; i<20; i++){
+      pseudo_free(&alloc, &blocks[i]);
+    } 
+    // dealloco una seconda volta (double free)
+    printf("\n\nTEST DOUBLE FREE\n");
+    for (int i = 0; i<20; i++){
+      pseudo_free(&alloc, &blocks[i]);
+    }
+
 
     
-  
+
+
+
+
 }

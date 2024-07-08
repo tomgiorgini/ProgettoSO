@@ -1,7 +1,7 @@
 #pragma once
 #include "bit_map.h"
 
-#define MAX_LEVELS 30 // 2^30 = 1GB
+#define MAX_LEVELS 20 // (con 1 MB)
 
 typedef struct {
     char* memory; // the memory area to be managed

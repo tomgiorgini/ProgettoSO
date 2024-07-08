@@ -5,7 +5,7 @@
 #define BITMAP_SIZE 2<<14
 #define BUDDY_LEVELS 16
 #define MEMORY_SIZE (1024*1024) // 1MB
-#define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS)) // 2^20 - 2^15 = 2^5 = 8
+#define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS)) // 2^20 - 2^16 = 2^4 = 16
 
 char bitmap_buffer[BITMAP_SIZE]; 
 char memory[MEMORY_SIZE];
@@ -26,9 +26,9 @@ int main(int argc, char** argv){
                                     bitmap_buffer,
                                     bitmap_buffer_size,
                                     min_bucket_size);
-    if (res == 0){
+    if (res == -1){
         printf("Errore di inizializzazione del Buddy Allocator, quit\n");
-        return 0;
+        return -1;
     }
   void* blocks[20];
   for (int i = 0; i<20; i++){
@@ -38,5 +38,7 @@ int main(int argc, char** argv){
     for (int j = 0; j<20; j++){
     psuedo_free(&alloc,blocks[j]);
   }
-
+  for (int i = 0; i<1030; i++){
+    pseudo_malloc(&alloc,600);
+  }
 }

@@ -7,6 +7,6 @@
 
 void * pseudo_malloc(BuddyAllocator* alloc, int size);
 
-void psuedo_free (BuddyAllocator* alloc,void* ptr);
+void pseudo_free (BuddyAllocator* alloc,void* ptr);
 
 

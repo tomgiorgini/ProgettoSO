@@ -146,7 +146,7 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size){
 
   // controlli su size
   if (size<0){
-    printf("\nErrore di malloc: Invalid Size\n");
+    printf("\nErrore di malloc: Invalid Size (<0)\n");
     return NULL;
   }
   if (size == 0) {
@@ -177,7 +177,7 @@ void* BuddyAllocator_malloc(BuddyAllocator* alloc, int size){
   printf("\nRichiesti: %d bytes (+ 8 bytes di overhead) , necessari %d bytes , al livello %d \n",org_size, alloc->min_bucket_size<<(alloc->num_levels - level), level);
 
   // cerco un blocco libero nella bitmap
-  void* indirizzo = BuddyAllocator_getBuddy(alloc, level,org_size);
+  void* indirizzo = BuddyAllocator_getBuddy(alloc, level ,org_size);
   if (indirizzo == NULL){
     printf("Errore di malloc: nessun blocco di memoria libero disponibile\n");
   }

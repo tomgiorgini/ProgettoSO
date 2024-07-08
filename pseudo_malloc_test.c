@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include "pseudo_malloc.h"
 
-#define BITMAP_SIZE 2<<14
+#define BITMAP_SIZE 2<<13
 #define BUDDY_LEVELS 16
-#define MEMORY_SIZE (1024*1024) // 1MB
+#define MEMORY_SIZE ((1024*1024) + 1) // 1MB
 #define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS)) // 2^20 - 2^16 = 2^4 = 16
 
 char bitmap_buffer[BITMAP_SIZE]; 
@@ -30,15 +30,8 @@ int main(int argc, char** argv){
         printf("Errore di inizializzazione del Buddy Allocator, quit\n");
         return -1;
     }
-  void* blocks[20];
-  for (int i = 0; i<20; i++){
-    void* p = pseudo_malloc(&alloc,(1<<(i+1))-8);
-    blocks[i] = p;
-  }
-    for (int j = 0; j<20; j++){
-    psuedo_free(&alloc,blocks[j]);
-  }
-  for (int i = 0; i<1030; i++){
-    pseudo_malloc(&alloc,600);
-  }
+
+
+    
+  
 }

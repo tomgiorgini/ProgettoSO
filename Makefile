@@ -10,7 +10,7 @@ HEADERS=bit_map.h buddy_allocator.h pseudo_malloc.h
 
 LIBS=libbuddy.a
 
-BINS= pseudo_malloc_test
+BINS= pseudo_malloc_test buddy_allocator_test
 
 .phony: clean all
 
@@ -24,6 +24,9 @@ libbuddy.a: $(OBJS)
 	$(RM) $(OBJS)
 
 pseudo_malloc_test: pseudo_malloc_test.o $(LIBS)
+	$(CC) $(CCOPTS) -o $@ $^ -lm
+
+buddy_allocator_test: buddy_allocator_test.o $(LIBS)
 	$(CC) $(CCOPTS) -o $@ $^ -lm
 
 clean:

@@ -48,7 +48,7 @@ void* pseudo_malloc(BuddyAllocator* alloc, int size){
 // pseudo free che estrapola dal blocco la sua dimensione (senza contare l'overhead)
 // per capire se è stato allocato con mmap o buddy allocator.
 // a questo punto dealloca la memoria con il corrispettivo metodo (munmap o buddyallocator_free)
-void psuedo_free(BuddyAllocator* alloc, void* mem){
+void pseudo_free(BuddyAllocator* alloc, void* mem){
     if (!mem){
         printf("\nErrore di deallocazione: Memoria da liberare vuota. Puntatore fornito: NULL\n");
         return;

@@ -1,7 +1,7 @@
 #include "buddy_allocator.h"
 #include <stdio.h>
 
-#define BITMAP_SIZE 2<<13
+#define BITMAP_SIZE 1<<14
 #define BUDDY_LEVELS 16
 #define MEMORY_SIZE ((1024*1024) + 1) // 1MB
 #define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS)) // 2^20 - 2^16 = 2^4 = 16

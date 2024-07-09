@@ -20,7 +20,7 @@ void* pseudo_malloc(BuddyAllocator* alloc, int size){
         printf("\nErrore di malloc: Impossibile allocare 0 byte\n");
         return NULL;
     }
-    // se la dimensione è pari a 1/4*PAGE_SIZE (1/4 * 4096 = 1024) si usa
+    // se la dimensione è pari o superirore a 1/4*PAGE_SIZE (1/4 * 4096 = 1024) si usa
     // la syscall mmap per allocare la memoria 
     if (size >= THRESHOLD){ // in questo caso si hanno 4 bytes di overhead
         printf("\nAllocazione da eseguire con mmap, size: %d\n",size);
@@ -28,12 +28,14 @@ void* pseudo_malloc(BuddyAllocator* alloc, int size){
         void *p = mmap(NULL,memory_size,PROT_READ | PROT_WRITE , MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         // controllo sulla corretta allocazione 
         if (p == MAP_FAILED){
-            printf("Errore di malloc: mmap failed with error %s",strerror(errno));
+            printf("Errore di malloc: mmap failed with error: %s",strerror(errno));
             return NULL;
         }
-        ((int*)p)[0] = memory_size; // si salva la grandezza (originale) nel blocco allocato
-        printf("Allocazione Riuscita: indirizzo: %p, di dimensioni: %d\n", p+sizeof(int),memory_size);
-        return (void *)(p + sizeof(int)); // si restituisce il puntatore corretto
+        else {
+            ((int*)p)[0] = memory_size; // si salva la grandezza (originale) nel blocco allocato
+            printf("Allocazione Riuscita: indirizzo: %p, di dimensioni: %d\n", p+sizeof(int),memory_size);
+            return (void *)(p + sizeof(int)); // si restituisce il puntatore corretto
+        }
     }
     else { // in questo caso si hanno 8 bytes di overhead
         printf("\nAllocazione da eseguire con Buddy Allocator, size: %d",size);
@@ -41,7 +43,8 @@ void* pseudo_malloc(BuddyAllocator* alloc, int size){
         if (!p) { // errore di allocazione (la printf sta nel buddy allocator)
             return NULL;
         }
-        else return p;
+        else 
+            return p;
     }
 }
 

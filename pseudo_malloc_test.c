@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "pseudo_malloc.h"
 
-#define BITMAP_SIZE 2<<13
+#define BITMAP_SIZE 1<<14
 #define BUDDY_LEVELS 16
 #define MEMORY_SIZE ((1024*1024) + 1) // 1MB
 #define MIN_BUCKET_SIZE (MEMORY_SIZE>>(BUDDY_LEVELS)) // 2^20 - 2^16 = 2^4 = 16
@@ -57,10 +57,15 @@ int main(int argc, char** argv){
                                         // segmentation faults
     }
 
+    //allocazione blocchi grandi 
+    printf("\n\nTEST ALLOCAZIONE BLOCCHI DI GRANDI DIMENSIONI\n");
+    void* p1 = pseudo_malloc(&alloc,1000000000);
+    void* p2 = pseudo_malloc(&alloc,2000000000);
+    void* p3 = pseudo_malloc(&alloc,2147483647);
 
-    
-
-
-
+    printf("\n\nTEST DEALLOCAZIONE BLOCCHI DI GRANDI DIMENSIONI\n");
+    pseudo_free(&alloc, &p1);
+    pseudo_free(&alloc, &p2);
+    pseudo_free(&alloc, &p3);
 
 }

@@ -12,6 +12,7 @@
 int levelIdx(size_t idx){
   return (int)floor(log2(idx+1));
 };
+
 //index of the buddy of node i
 int buddyIdx(int idx){
   if (idx == 0) //radice
@@ -22,7 +23,7 @@ int buddyIdx(int idx){
 }
 //parent of the node idx
 int parentIdx(int idx){
-  return (int)(idx-1)/2;
+  return (int)(idx-1)/2; // sempre considerando 0 come radice
 }
 // idx of 1st node of a level i
 int firstIdx(int level){
@@ -128,8 +129,8 @@ void* BuddyAllocator_getBuddy(BuddyAllocator* alloc, int level, int size){
     update_parent(&alloc->bitmap,bitmap_idx,1); // del blocco preso a 1 (essendo ricorsive): non c'è bisogno di farlo qui
 
     int block_size = alloc->min_bucket_size << (alloc->num_levels - level); // block_size = bucket_size * 2 ^num_level - level
-                                                                            // perchè i livelli si contano dall'alto verso il basso, la dimensione
-                                                                            // è al contrario
+                                                                            // perchè i livelli si contano dall'alto verso il basso, 
+                                                                            // la dimensione è al contrario
 
     char *ret = alloc->memory + ((startIdx(bitmap_idx)+1) * block_size); // l'indirizzo da restituire è calcolato sommando all'inizio
                                                                         // della memoria l'offset dell'indice nel suo livello * dimensione del blocco
@@ -240,13 +241,13 @@ void merge(BitMap *bitmap, int bit){
 // setta il bit stesso e il suo bit padre nella bitmap al valore passato come argomento (1 o 0)
 void update_parent(BitMap *bitmap, int bit, int value) {
   BitMap_setBit(bitmap,  bit,value);
-  if ( bit > 0) {
+  if ( bit > 0) { // si ferma alla radice
     update_parent(bitmap, parentIdx(bit), value); //ricorsione in salita dell'albero
   }
 }
 
 void update_child(BitMap *bitmap, int  bit, int value) {
-  if ( bit < bitmap->num_bits) { 
+  if ( bit < bitmap->num_bits) { // si ferma quando supera il limite della bitmap
     BitMap_setBit(bitmap,  bit, value);
     // si fa ricorsione binaria sui figli in discesa
     update_child(bitmap,  bit * 2 +1, value);  // sinistro
